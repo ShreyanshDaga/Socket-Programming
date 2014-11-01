@@ -1,0 +1,88 @@
+a) Name: Shreyansh Dnyanesh Daga
+
+c) What is done in the assignment?
+-> In this assignment I have studied, understood and implemented concepts of
+   Socket Programming in the Linux OS environment using the C language.
+-> As a case study we were given to implement a simulation of Auctioning taking place
+   , but with a Computer Network "feel" to it.
+-> In this assignment there are 3 entities as follows
+	1) Auction Server: Which logs in different users like Sellers and Bidders
+	2) Bidders: These "hosts" want to auction stuff from the Sellers
+	3) Sellers: These "hosts" want to sell stuff to Sellers
+-> All the communication between various entities takes place through sockets (both UDP and TCP).
+
+d) My code files
+	1) auctionserver.h: This file has the definition of various structures that I am going to use in auctionserver.c
+	2) auctionserver.c: This file is the source file for auction server. It has various functions divided into 3 Phases and this file should be run first.
+	3) seller.h: This file has the definition of sturcture required by the seller1.c and seller2.c
+	4) seller1.c: This is the source file for seller 1. It has various functions divided into 3 Phases
+	5) seller2.c: This is the source file for seller 2. It has various functions divided into 3 Phases
+	6) bidder.h: This file has the definition of structure required by the bidder1.c and the bidder2.c
+	7) bidder1.c: This is the source file for bidder 1. It has various functions for only Phase 1 and Phase 3
+	8) bidder2.c: This is the source file for bidder 2. It has various functions for only Phase 1 and Phase 3
+
+e) How to run programs.
+	Steps to Run:
+	1) Unzip the tar.gz file ee450_sdaga_session1.tar.gz
+	2) Compile all the files using "make" command.
+	3) Open a terminal, run "./auc" to start auction server.
+	4) Open another terminal, run "./bidd1" to start bidder 1.
+	5) Open another terminal, run "./bidd2" to start bidder 2.
+	6) Open another terminal, run "./sell1" to start seller 1.
+	7) Open another terminal, run "./sell2" to start seller 2.
+	8) All terminals should be running now, and execution will start.
+	9) To delete all the object files use "make clean".
+
+	Additional Description
+	-> First all source files should be compiled using the make file. And there will be 5 output files as follows
+		1) auc for auctionserver.c
+		2) bidd1 for bidder1.c
+		3) bidd2 for bidder2.c
+		4) sell1 for seller1.c
+		5) sell2 for seller2.c
+	-> First the auc output file should be run, so that the Auction Server is started and it is in its Phase 1 waiting for connections from Clients
+	-> Then one after other, bidd1, bidd2, sell1 and sell2 shoudle be run.
+	
+	-> I have given a delay of 30 seconds in Phase 2 of sellers so that you can execute the first phase in any order of the clients.
+	   This will make sure that Sellers in Phase 2 will wait(for 30 and 33 seconds respectively for seller 1 and seller 2), by that time it is safely assumed that Phase 1 has completed
+ 	   and the Auction server has started Phase 2 and is listening to its PreAuc port for Sellers.
+
+	-> Then as soon as Phase 2 ends, auction server will broadcast the item list to bidders on UDP in Phase 3.
+	-> Once Bidders send their bidding information to auction server, the Auction server performs the actualy auctioning.
+	-> For this I have given a delay of 5 seconds. This is to simulate that a real auctioning is being performed.
+	-> Afer this 5 seconds, the auction server send the result to all the respective clients which are listening on their TCP port in Phase 3.
+	-> After all the parties have got the result of the auctioning, the program ends.
+
+f) The format of the messages exchanged.
+
+	-> According to the guidelines, all the messages exchanged between different hosts have a following format.
+	1) When sending Login request the clients will have "Login#" as command in their request messages.
+	2) When sending Login authentication the auction server will have "Accepted#" or "Rejected#" to the respective client.
+	   If the client is Seller, the auction server will also send the preauction IP and preauction port number as parameters after the "Accepted#".
+	3) When sending item list to Auction server in Phase 2, the sellers have "ItemList# as command then followed by the sender(seller) and the item list.
+	4) When sending the broadcastlist to all bidders, thr auction server has "BroadcastList#" as command followed by the list of items.
+	5) When sending the bidding info to auction server, the bidders have "BiddingInfo#" as the command followed by the sender(bidder) and its bidding info.
+	6) When sending final result to each client, the auction server had "SoldList#" as the command and followed by the respective items and the selling price as parameters.
+
+	-> In case of recieveing the messages at each stage al hosts check for thr command, if the command is found to be incorrect and not expected, it will print
+	   "Bad Command from <host>". And the program will end there.
+	-> This is done to ensure that when sending through UDP sockets, the data is maintained.
+
+	-> All the send and recv buffers are character buffers of size maximum upto 1024;
+
+g) Where the program might fail.
+
+	-> As such all care is taken to ensure all the cases are handled properly.
+	-> However, in case of a wrong login or authentication, the program will end prematurely.
+
+	-> In phase 1 of auctionserver, i have used 4 iterations of while loop to accept incoming requests from client. THis means after 4 requests it will go to next Phase. and it is assumed that login information was correct.
+	-> In case of less than 4 requests in Phase 1 of auction server, the server will still remain in the loop expecting 4 connections and will go to next phase only if 4 connections are done correctly.
+	
+	-> If the delay while executing bidd1, bidd2, sell1, sell2 are more than 30 seconds, the sell1 and sell2 will attempt to go into Phase 2 and will exit the program there since auction server is still in phase 1.
+	-> That is why to take care of it i have given a delay of 30 and 33 seconds between phase 1 and 2 of sellers.
+
+h) Reused codes.
+	-> No such codes used, only the Beej's guide is reffered here.
+	-> Rest all is my own code, ofcourse apart from APIs used.
+	-> You may observe a particular style in my coding which is consistant throughout all the code files.
+
